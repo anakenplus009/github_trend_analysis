@@ -1,0 +1,38 @@
+name: 'github_trend_analysis'
+version: '1.0.0'
+config-version: 2
+
+# プロジェクトの基本構成
+profile: 'github_profile' # profiles.yml で設定した名前と一致させる
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# モデルの設定（ここでレイヤーごとの書き出し先や設定を制御します）
+models:
+  github_trend_analysis:
+    # 1. Staging レイヤー：ビューとして作成（ストレージ節約）
+    staging:
+      +materialized: view
+      +schema: staging
+
+    # 2. Intermediate レイヤー：頻繁に参照するためテーブル化
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+
+    # 3. Marts レイヤー：最終成果物。増分更新（incremental）も検討
+    marts:
+      +materialized: table
+      +schema: marts
+      # 特定のファイル（モデル作成用）だけ設定を上書きする
+      create_model_tech_prediction:
+        +materialized: model 
