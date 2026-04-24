@@ -1,0 +1,37 @@
+models/
+├── staging/
+│   ├── src_github.yml
+│   ├── stg_github__repos.sql
+│   ├── stg_github__commits.sql
+│   └── stg_github__languages.sql
+├── intermediate/
+│   ├── int_repo_monthly_activity.sql   # 時系列でのコミット数の集計
+│   └── int_tech_growth_metrics.sql    # 成長率の計算
+└── marts/
+    ├── train_tech_prediction_regression.sql # 正解ラベル等の算出クエリ
+    └── create_model_tech_prediction.sql  # モデル学習クエリ
+    └── predict_model.sql  # モデル実行クエリ
+
+
+
+#データレイヤリング
+staging
+    #　BigQuery上の生データをdbtに認識させるsrc.ymlファイル作成　
+    #　生データのリネーム、型変換
+    #　データのフィルタリング(大規模データだと特に重要)
+        # TIMESTAMP型への変換でのちの工程の負担減
+        # whereで条件設定し、スキャンするデータの節約
+          # スキャンする前のデータ数
+            # sample_commits : 680k
+            # sample_repos : 400k
+            # languages : 3325k
+
+intermediate
+    #　複数テーブルのJOIN、フラグ立て、期間計算
+    #　共通の計算ロジックを一本化することで、修正漏れを防ぐ
+    #
+
+marts
+    #　属性や数値の整理
+    #　ランキング表の表示
+    #  

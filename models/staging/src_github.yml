@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: github_public
+    database: bigquery-public-data
+    schema: github_repos
+    tables:
+        - name: sample_repos    # リポジトリの基本情報
+        - name: sample_commits  # コミット履歴
+        - name: languages       # 使用言語の情報
