@@ -1,0 +1,11 @@
+# profiles.yml の設定例
+github_profile:
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth     # ブラウザが立ち上がり認証されます
+      project: noted-cortex-460601-c3
+      dataset: dev  # 作成したデータセット名
+      threads: 1
+      location: US      # 重要：公共データがUSにあるため合わせる
+  target: dev
