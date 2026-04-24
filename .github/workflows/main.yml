@@ -24,7 +24,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           # プロバイダーの完全なリソース名（Secretsから取得）
-          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/trend-analysis-github-actions/anakenplus009/github_trend_analysis'
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/trend-analysis-github-actions/providers/github-oidc'
           service_account: '${{ secrets.GCP_SA_EMAIL }}'
 
       # 2. dbt 実行環境のセットアップ
