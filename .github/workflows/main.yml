@@ -41,6 +41,6 @@ jobs:
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |
-          dbt deps
-          dbt run
+          dbt deps --profiles-dir .
+          dbt run --profiles-dir . --target dev
           dbt test
