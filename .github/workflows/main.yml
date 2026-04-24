@@ -25,7 +25,7 @@ jobs:
         with:
           # プロバイダーの完全なリソース名（Secretsから取得）
           workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/trend-analysis-github-actions/anakenplus009/github_trend_analysis'
-          service_account: 'your-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+          service_account: '${{ secrets.GCP_SA_EMAIL }}'
 
       # 2. dbt 実行環境のセットアップ
       - name: Set up Python
