@@ -1,1 +1,46 @@
-test
+name: dbt_github_trend_analysis
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 1' # 毎週月曜実行
+
+permissions:
+  id-token: write # Workload Identity 連携に必須
+  contents: read  # リポジトリの読み取り権限
+
+jobs:
+  dbt_run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. Google Cloud 認証（ここがキーレスの肝）
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # プロバイダーの完全なリソース名（Secretsから取得）
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/trend-analysis-github-actions/anakenplus009/github_trend_analysis'
+          service_account: 'your-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+
+      # 2. dbt 実行環境のセットアップ
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dbt
+        run: pip install dbt-bigquery
+
+      # 3. dbt 実行
+      - name: dbt Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          dbt deps
+          dbt run
+          dbt test
