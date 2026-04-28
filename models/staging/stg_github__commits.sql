@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key= 'commit_hush',
+        unique_key= 'commit_hash',
         partition_by={
             "field":"committer_date",
             "data_type":"timestamp",
@@ -14,7 +14,7 @@ with source as (
     select * from {{ source('github_public', 'commits') }}
     where 1=1
     {% if is_incremental() %}
-      AND TIMESTAMP_SECONDS(committer.date.seconds) > (SELECT max(committer.date) FROM {{this}})
+      AND TIMESTAMP_SECONDS(committer.date.seconds) > (SELECT max(committer_date) FROM {{this}})
     {% else %}
       AND timestamp_seconds(committer.date.seconds) >= '2020-01-01'
     {% endif %}
