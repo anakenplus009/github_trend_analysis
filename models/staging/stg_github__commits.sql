@@ -1,5 +1,23 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key= 'commit_hush',
+        partition_by={
+            "field":"committer_date",
+            "data_type":"timestamp",
+            "granularity":"month"
+        }
+    )
+}}
+
 with source as (
-    select * from {{ source('github_public', 'sample_commits') }}
+    select * from {{ source('github_public', 'commits') }}
+    where 1=1
+    {% if is_incremental() %}
+      AND TIMESTAMP_SECONDS(committer.date.seconds) > (SELECT max(committer.date) FROM {{this}})
+    {% else %}
+      AND timestamp_seconds(committer.date.seconds) >= '2020-01-01'
+    {% endif %}
 ),
 
 renamed as (
@@ -11,16 +29,16 @@ renamed as (
         committer.name as committer_name,
         
         -- 日時情報の整理（BigQueryのTIMESTAMP型を扱いやすくする）
-        committer.date as committer_date,
+        TIMESTAMP_SECONDS(committer.date.seconds) as committer_date,
         
-        -- コミットメッセージ（解析には使わないが、データの性質確認用に一応保持）
+        -- コミットメッセージ（解析には使わないが、データの性質確認用に保持）
         message,
         
         -- コミットの一意のハッシュ
         commit as commit_hash
 
     from source
-    where committer.date >= '2010-04-01'
+    where TIMESTAMP_SECONDS(committer.date.seconds) <= current_timestamp()
 )
 
 select * from renamed
