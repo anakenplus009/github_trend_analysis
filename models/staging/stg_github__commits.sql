@@ -23,7 +23,7 @@ with source as (
 renamed as (
     select
         -- リポジトリの特定（複数のリポジトリ名が含まれる配列を1つに展開）
-        repo_name as repo_name,
+        repo_name[OFFSET(0)] as repo_name,
         
         -- コミット者の情報
         committer.name as committer_name,
