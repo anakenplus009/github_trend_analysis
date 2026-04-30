@@ -21,9 +21,9 @@ tech_monthly_agg as (
         -- コミット数に言語割合を掛けて合計（加重平均）
         SUM(a.commit_count * l.lang_share_ratio) AS total_commits,
         -- アクティブなリポジトリ数は、その言語が使われている「実質的な数」として合計
-        SUM(l.lang_share_ratio) AS active_repos_weighted,
+        SUM(l.lang_share_ratio) AS active_repos,
         -- 開発者数も割合で按分
-        SUM(a.unique_committers * l.lang_share_ratio) AS total_developers_weighted
+        SUM(a.unique_committers * l.lang_share_ratio) AS total_developers
     FROM
         repo_activity AS a
     INNER JOIN 
