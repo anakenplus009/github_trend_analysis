@@ -9,7 +9,7 @@ languages as (
       language_name,
       language_bytes,
       -- リポジトリごとの合計bytesに対する各言語の割合を算出
-      SAFE_DIVIDE(language_bytes, SUM(bytes) OVER(PARTITION BY repo_name)) as lang_share_ratio  
+      SAFE_DIVIDE(language_bytes, SUM(language_bytes) OVER(PARTITION BY repo_name)) as lang_share_ratio  
     FROM {{ref('stg_github__languages')}}
 ),
 
