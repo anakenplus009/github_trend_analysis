@@ -7,10 +7,12 @@ languages as (
     SELECT
       repo_name,
       language_name,
-      language_bytes,
-      -- リポジトリごとの合計bytesに対する各言語の割合を算出
-      SAFE_DIVIDE(language_bytes, SUM(language_bytes) OVER(PARTITION BY repo_name)) as lang_share_ratio  
-    FROM {{ref('stg_github__languages')}}
+      1.0 as lang_share_ratio -- メイン言語なので比率は 100% (1.0)
+    FROM
+        {{ ref('stg_github__languages') }}
+    QUALIFY
+        -- bytes 数が最大のものだけを残す
+        ROW_NUMBER() OVER(PARTITION BY repo_name ORDER BY bytes DESC) = 1
 ),
 
 # 言語ごとの月次集計
