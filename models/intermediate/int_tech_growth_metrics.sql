@@ -12,7 +12,7 @@ languages as (
         {{ ref('stg_github__languages') }}
     QUALIFY
         -- bytes 数が最大のものだけを残す
-        ROW_NUMBER() OVER(PARTITION BY repo_name ORDER BY bytes DESC) = 1
+        ROW_NUMBER() OVER(PARTITION BY repo_name ORDER BY language_bytes DESC) = 1
 ),
 
 # 言語ごとの月次集計
