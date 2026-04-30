@@ -15,7 +15,7 @@ SELECT
     commit_month,
     commit_growth_rate,
     commit_density,
-    active_repos,
+    CAST(active_repos AS INT64) AS active_repos,
     predicted_target_growth_multiplier AS predicted_growth_factor
 FROM
     ML.PREDICT(
