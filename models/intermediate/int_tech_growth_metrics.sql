@@ -4,7 +4,12 @@ with repo_activity as (
 ),
 
 languages as (
-    SELECT * 
+    SELECT
+      repo_name,
+      language_name,
+      bytes,
+      -- リポジトリごとの合計bytesに対する各言語の割合を算出
+      SAFE_DIVIDE(bytes, SUM(bytes) OVER(PARTITION BY repo_name)) as lang_share_ratio  
     FROM {{ref('stg_github__languages')}}
 ),
 
@@ -13,9 +18,12 @@ tech_monthly_agg as (
     SELECT
         l.language_name,
         a.commit_month,
-        SUM(a.commit_count) AS total_commits,
-        COUNT(DISTINCT a.repo_name) AS active_repos,
-        COUNT(DISTINCT a.unique_committers) AS total_developers
+        -- コミット数に言語割合を掛けて合計（加重平均）
+        SUM(a.commit_count * l.lang_share_ratio) AS total_commits,
+        -- アクティブなリポジトリ数は、その言語が使われている「実質的な数」として合計
+        SUM(l.lang_share_ratio) AS active_repos_weighted,
+        -- 開発者数も割合で按分
+        SUM(a.unique_committers * l.lang_share_ratio) AS total_developers_weighted
     FROM
         repo_activity AS a
     INNER JOIN 
